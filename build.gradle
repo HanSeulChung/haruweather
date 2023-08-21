@@ -1,0 +1,33 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.9'
+	id 'io.spring.dependency-management' version '1.1.2'
+}
+
+group = 'zerobase'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17' // 강의에서는 1.8
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'  // 컴파일할때만 사용한다!
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
