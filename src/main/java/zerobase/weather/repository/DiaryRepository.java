@@ -7,12 +7,13 @@ import zerobase.weather.domain.Diary;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Integer>{
     List<Diary> findDiaryByDate(LocalDate date);
     List<Diary> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
-    Diary getFirstByDate(LocalDate date);
+    Optional<Diary> getFirstByDate(LocalDate date);
 //    void updateDiaryByDate(LocalDate date);
 
     @Transactional

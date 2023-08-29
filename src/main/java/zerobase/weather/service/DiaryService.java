@@ -1,5 +1,6 @@
 package zerobase.weather.service;
 
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,8 +16,10 @@ import zerobase.weather.WeatherApplication;
 import zerobase.weather.domain.DateWeather;
 import zerobase.weather.domain.Diary;
 import zerobase.weather.error.InvalidDate;
+import zerobase.weather.exception.DiaryException;
 import zerobase.weather.repository.DateWeatherRepository;
 import zerobase.weather.repository.DiaryRepository;
+import zerobase.weather.type.ErrorCode;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,7 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static zerobase.weather.type.ErrorCode.*;
+
 @Service
+@RequiredArgsConstructor
 public class DiaryService {
     @Value("${openweathermap.key}")
     private String apiKey;
@@ -35,11 +41,6 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final DateWeatherRepository dateWeatherRepository;
     private static final Logger logger = LoggerFactory.getLogger(WeatherApplication.class);
-
-    public DiaryService(DiaryRepository diaryRepository, DateWeatherRepository dateWeatherRepository) {
-        this.diaryRepository = diaryRepository;
-        this.dateWeatherRepository = dateWeatherRepository;
-    }
 
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
@@ -91,7 +92,11 @@ public class DiaryService {
     @Transactional(readOnly = true)
     public List<Diary> readDiary(LocalDate date) {
         if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
-            throw new InvalidDate();
+            throw new DiaryException(TOO_FUTURE_DATE);
+        }
+
+        if (date.isBefore(LocalDate.ofYearDay(1800, 1))) {
+            throw new DiaryException(TOO_PAST_DATE);
         }
         logger.debug("read diary");
         return diaryRepository.findDiaryByDate(date);
@@ -102,7 +107,9 @@ public class DiaryService {
     }
 
     public void updateDiary(LocalDate date, String text) {
-        Diary nowDiary = diaryRepository.getFirstByDate(date);
+        Diary nowDiary = diaryRepository.getFirstByDate(date)
+                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
+
         nowDiary.setText(text);
         diaryRepository.save(nowDiary);
     }
