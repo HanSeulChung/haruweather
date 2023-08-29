@@ -38,4 +38,4 @@ out/
 
 logs
 
-src/main/resources/
+application-private.properties
