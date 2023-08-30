@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -15,6 +14,8 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Diary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +26,10 @@ public class Diary {
     private String text;
     private LocalDate date;
 
-    public void setDateWeather(DateWeather dateWeather) {
-        this.date = dateWeather.getDate();
-        this.weather = dateWeather.getWeather();
-        this.icon = dateWeather.getIcon();
-        this.temperature = dateWeather.getTemperature();
-    }
+//    public void setDateWeather(DateWeather dateWeather) {
+//        this.date = dateWeather.getDate();
+//        this.weather = dateWeather.getWeather();
+//        this.icon = dateWeather.getIcon();
+//        this.temperature = dateWeather.getTemperature();
+//    }
 }

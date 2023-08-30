@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import zerobase.weather.WeatherApplication;
 import zerobase.weather.domain.DateWeather;
 import zerobase.weather.domain.Diary;
-import zerobase.weather.error.InvalidDate;
+import zerobase.weather.dto.DiaryDto;
 import zerobase.weather.exception.DiaryException;
 import zerobase.weather.repository.DateWeatherRepository;
 import zerobase.weather.repository.DiaryRepository;
@@ -51,22 +51,37 @@ public class DiaryService {
 
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void createDiary(LocalDate date, String text){
+    public DiaryDto createDiary(LocalDate date, String text){
+        // 유효성 검사
+        validateDiary(date);
         logger.info("started to create diary");
         // 날씨 데이터 가져오기 (API에서 가져오기 or DB에서 가져오기)
         DateWeather dateWeather = getDateWeather(date);
-
         // 파싱한 데이터 + 일기 값 우리 db에 넣기
-        Diary nowDiary = new Diary();
-        nowDiary.setDateWeather(dateWeather);
-        nowDiary.setText(text);
-        diaryRepository.save(nowDiary);
         logger.info("end to create diary");
+
+        return DiaryDto.fromEntity(diaryRepository.save(
+                Diary.builder()
+                .icon(dateWeather.getIcon())
+                .temperature(dateWeather.getTemperature())
+                .date(dateWeather.getDate())
+                .weather(dateWeather.getWeather())
+                .text(text)
+                .build()));
     }
 
+    private void validateDiary(LocalDate date) {
+        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
+            throw new DiaryException(TOO_FUTURE_DATE);
+        }
+
+        if (date.isBefore(LocalDate.ofYearDay(1800, 1))) {
+            throw new DiaryException(TOO_PAST_DATE);
+        }
+    }
     private DateWeather getWeatherFromApi() {
         // open weather map 에서 날씨 데이터 가져오기
-        String weatherData = getWeaterString();
+        String weatherData = getWeatherString();
 
         // 받아온 날씨 json 파싱하기
         Map<String, Object> parsedWeather = parseWeather(weatherData);
@@ -91,13 +106,7 @@ public class DiaryService {
 
     @Transactional(readOnly = true)
     public List<Diary> readDiary(LocalDate date) {
-        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
-            throw new DiaryException(TOO_FUTURE_DATE);
-        }
-
-        if (date.isBefore(LocalDate.ofYearDay(1800, 1))) {
-            throw new DiaryException(TOO_PAST_DATE);
-        }
+        validateDiary(date);
         logger.debug("read diary");
         return diaryRepository.findDiaryByDate(date);
     }
@@ -115,9 +124,10 @@ public class DiaryService {
     }
 
     public void deleteDiary(LocalDate date) {
+        validateDiary(date);
         diaryRepository.deleteAllByDate(date);
     }
-    private String getWeaterString() {
+    private String getWeatherString() {
         String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=" + apiKey;
         try {
             URL url = new URL(apiUrl);

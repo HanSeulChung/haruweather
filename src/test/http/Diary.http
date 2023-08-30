@@ -1,0 +1,25 @@
+### Get diary
+GET http://localhost:8080/read/diary?date=2023-08-30
+Content-Type: application/json
+
+### Post diary version1
+POST http://localhost:8080/create/diary
+Content-Type: application/json
+
+{
+  "date" : "2023-08-30",
+  "text" : "나는 오늘 정말 정말 스프링 부트가 재밌었다."
+}
+
+
+### Post diary version2
+POST http://localhost:8080/create/diary?date=2023-08-30
+Content-Type: application/json
+
+{
+  "text" : "나는 오늘 정말 정말 재밌었다."
+}
+
+### Delete diary or diaries
+DELETE http://localhost:8080/create/diary?date=2023-08-30
+Content-Type: application/json
