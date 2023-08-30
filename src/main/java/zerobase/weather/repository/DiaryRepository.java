@@ -18,4 +18,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer>{
 
     @Transactional
     void deleteAllByDate(LocalDate date);
+    @Transactional
+    void deleteById(int id);
+    Optional<Diary> findByDate(LocalDate date);
 }

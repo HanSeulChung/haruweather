@@ -7,7 +7,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import zerobase.weather.domain.Diary;
 import zerobase.weather.dto.CreateDiary;
+import zerobase.weather.dto.DeleteDiaries;
 import zerobase.weather.dto.DeleteDiary;
+import zerobase.weather.dto.UpdateDiary;
 import zerobase.weather.service.DiaryService;
 
 import javax.validation.Valid;
@@ -30,9 +32,18 @@ public class DiaryController {
     }
     @ApiOperation(value = "선택한 날짜의 일기를 삭제할 수 있습니다.")
     @DeleteMapping("/delete/diary")
-    public DeleteDiary.Response deleteDiary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        diaryService.deleteDiary(date);
+    public DeleteDiary.Response deleteDiary(@ApiParam(value = "일기를 삭제할 날짜", example = "2023-08-23")
+                                                @RequestBody @Valid DeleteDiary.Request request) {
+        diaryService.deleteDiary(request.getId(), request.getDate());
         return DeleteDiary.Response.builder().deleteMessage("삭제되었습니다.").build();
+    }
+
+    @ApiOperation(value = "선택한 날짜의 일기를 전체 삭제할 수 있습니다.")
+    @DeleteMapping("/delete/diaries")
+    public DeleteDiaries.Response deleteDiaries(@ApiParam(value = "일기 전체를 삭제할 날짜", example = "2023-08-23")
+                                            @RequestBody @Valid DeleteDiaries.Request request) {
+        diaryService.deleteDiaries(request.getDate());
+        return DeleteDiaries.Response.builder().deleteMessage("삭제되었습니다.").build();
     }
     @ApiOperation(value = "선택한 날짜의 모든 일기 데이터를 가져옵니다.")
     @GetMapping("/read/diary")
@@ -48,8 +59,9 @@ public class DiaryController {
 
     @ApiOperation(value = "선택한 날짜의 일기를 수정할 수 있습니다.")
     @PutMapping("/update/diary")
-    void updateDiary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, @RequestBody String text) {
-        diaryService.updateDiary(date, text);
+    public UpdateDiary.Response updateDiary(@RequestBody @Valid UpdateDiary.Request request) {
+        return UpdateDiary.Response.from(diaryService.updateDiary(
+                request.getId(), request.getDate(), request.getText()));
     }
 
 }

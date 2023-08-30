@@ -5,14 +5,11 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public class DeleteDiary {
+public class DeleteDiaries {
     @Getter
     @Setter
     @AllArgsConstructor
     public static class Request {
-        @NotNull
-        private int id;
-
         @NotNull
         private LocalDate date;
     }

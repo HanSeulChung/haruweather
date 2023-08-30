@@ -2,15 +2,28 @@
 GET http://localhost:8080/read/diary?date=2023-08-30
 Content-Type: application/json
 
+### Get diaries
+GET http://localhost:8080/read/diaries?startDate=2020-02-17&endDate=2023-09-01
+Content-Type: application/json
+
 ### Post diary version1
 POST http://localhost:8080/create/diary
 Content-Type: application/json
 
 {
   "date" : "2023-08-30",
-  "text" : "나는 오늘 정말 정말 스프링 부트가 재밌었다."
+  "text" : "나는 저녁을 먹었다."
 }
 
+### PUT diary
+PUT http://localhost:8080/update/diary
+Content-Type: application/json
+
+{
+  "id" : 14,
+  "date" : "2023-08-30",
+  "text" : "일기를 수정한다."
+}
 
 ### Post diary version2
 POST http://localhost:8080/create/diary?date=2023-08-30
@@ -20,6 +33,19 @@ Content-Type: application/json
   "text" : "나는 오늘 정말 정말 재밌었다."
 }
 
-### Delete diary or diaries
-DELETE http://localhost:8080/create/diary?date=2023-08-30
+### Delete diary
+DELETE http://localhost:8080/delete/diary
 Content-Type: application/json
+
+{
+  "id" : 14,
+  "date" : "2023-08-30"
+}
+
+### Delete diaries
+DELETE http://localhost:8080/delete/diaries
+Content-Type: application/json
+
+{
+  "date" : "2023-08-30"
+}

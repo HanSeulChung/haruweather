@@ -25,7 +25,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +52,6 @@ public class DiaryService {
         dateWeatherRepository.save(getWeatherFromApi());
     }
 
-
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public DiaryDto createDiary(LocalDate date, String text){
         // 유효성 검사
@@ -71,12 +73,27 @@ public class DiaryService {
     }
 
     private void validateDiary(LocalDate date) {
+        if (!isValidDateFormat(date)) {
+            throw new DiaryException(INVALID_DATE_FORMAT);
+        }
         if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
             throw new DiaryException(TOO_FUTURE_DATE);
         }
-
         if (date.isBefore(LocalDate.ofYearDay(1800, 1))) {
             throw new DiaryException(TOO_PAST_DATE);
+        }
+    }
+
+    public boolean isValidDateFormat(LocalDate date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  // 여기서 체크하고 싶은데 아예 들어오질 않는다..
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse( String.valueOf(date) );
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
     private DateWeather getWeatherFromApi() {
@@ -112,19 +129,57 @@ public class DiaryService {
     }
     @Transactional(readOnly = true)
     public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
+        validateDiaries(startDate, endDate);
         return diaryRepository.findAllByDateBetween(startDate, endDate);
     }
+    public void validateDiaries(LocalDate startDate, LocalDate endDate) {
+        if (!isValidDateFormat(startDate) || !isValidDateFormat(endDate)) {
+            throw new DiaryException(INVALID_DATE_FORMAT);
+        }
+        if (startDate.isAfter(LocalDate.ofYearDay(3050, 1))
+                || endDate.isAfter(LocalDate.ofYearDay(3050, 1))) {
+            throw new DiaryException(TOO_FUTURE_DATE);
+        }
+        if (startDate.isBefore(LocalDate.ofYearDay(1800, 1))
+                || endDate.isBefore(LocalDate.ofYearDay(1800, 1))) {
+            throw new DiaryException(TOO_PAST_DATE);
+        }
 
-    public void updateDiary(LocalDate date, String text) {
-        Diary nowDiary = diaryRepository.getFirstByDate(date)
-                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
+        if (endDate.isBefore(startDate)) {
+            throw new DiaryException(ENDDATE_MUST_AFTER_THAN_STARTDATE);
+        }
+    }
+    public DiaryDto updateDiary(int id, LocalDate date, String text) {
+        Diary nowDiaryById = diaryRepository.findById(id)
+                .orElseThrow(() -> new DiaryException(ID_NOT_FOUND));
 
-        nowDiary.setText(text);
-        diaryRepository.save(nowDiary);
+        if(!nowDiaryById.getDate().equals(date)) {
+            throw new DiaryException(ID_DATE_UN_MATCH);
+        }
+
+        return DiaryDto.fromEntity(diaryRepository.save(
+                Diary.builder()
+                        .id(nowDiaryById.getId())
+                        .icon(nowDiaryById.getIcon())
+                        .temperature(nowDiaryById.getTemperature())
+                        .date(nowDiaryById.getDate())
+                        .weather(nowDiaryById.getWeather())
+                        .text(text)
+                        .build()));
     }
 
-    public void deleteDiary(LocalDate date) {
+    public void deleteDiary(int id, LocalDate date) {
         validateDiary(date);
+        Diary nowDiary = diaryRepository.findById(id)
+                .orElseThrow(() -> new DiaryException(ID_NOT_FOUND));
+
+        diaryRepository.deleteById(id);
+    }
+
+    public void deleteDiaries(LocalDate date) {
+        validateDiary(date);
+        Diary nowDiary = diaryRepository.findByDate(date)
+                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
         diaryRepository.deleteAllByDate(date);
     }
     private String getWeatherString() {
