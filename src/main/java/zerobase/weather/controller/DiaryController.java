@@ -41,8 +41,9 @@ public class DiaryController {
     @ApiOperation(value = "선택한 날짜의 일기를 전체 삭제할 수 있습니다.")
     @DeleteMapping("/delete/diaries")
     public DeleteDiaries.Response deleteDiaries(@ApiParam(value = "일기 전체를 삭제할 날짜", example = "2023-08-23")
-                                            @RequestBody @Valid DeleteDiaries.Request request) {
-        diaryService.deleteDiaries(request.getDate());
+                                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        DeleteDiaries.Request request = new DeleteDiaries.Request(date);
+        diaryService.deleteDiaries(date);
         return DeleteDiaries.Response.builder().deleteMessage("삭제되었습니다.").build();
     }
     @ApiOperation(value = "선택한 날짜의 모든 일기 데이터를 가져옵니다.")

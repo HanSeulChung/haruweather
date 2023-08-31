@@ -26,9 +26,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +123,8 @@ public class DiaryService {
     public List<Diary> readDiary(LocalDate date) {
         validateDiary(date);
         logger.debug("read diary");
-        return diaryRepository.findDiaryByDate(date);
+        return (List<Diary>) diaryRepository.findDiaryByDate(date)
+                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
     }
     @Transactional(readOnly = true)
     public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
@@ -178,8 +177,10 @@ public class DiaryService {
 
     public void deleteDiaries(LocalDate date) {
         validateDiary(date);
-        Diary nowDiary = diaryRepository.findByDate(date)
+        Diary nowDiary = diaryRepository.getFirstByDate(date)
                 .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
+//        Diary nowDiary = diaryRepository.findDiaryByDate(date)
+//                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND)); // 왜 find로는 에러가 나는지?
         diaryRepository.deleteAllByDate(date);
     }
     private String getWeatherString() {

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Integer>{
-    List<Diary> findDiaryByDate(LocalDate date);
+    Optional<Diary> findDiaryByDate(LocalDate date);
     List<Diary> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
     Optional<Diary> getFirstByDate(LocalDate date);
 //    void updateDiaryByDate(LocalDate date);
@@ -20,5 +20,4 @@ public interface DiaryRepository extends JpaRepository<Diary, Integer>{
     void deleteAllByDate(LocalDate date);
     @Transactional
     void deleteById(int id);
-    Optional<Diary> findByDate(LocalDate date);
 }
