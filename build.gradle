@@ -27,6 +27,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+//	implementation 'org.springdoc:springdoc-openapi-ui:1.5.10'
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.projectlombok:lombok'  // 컴파일할때만 사용한다!

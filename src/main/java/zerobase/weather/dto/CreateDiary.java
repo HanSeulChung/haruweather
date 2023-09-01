@@ -1,12 +1,11 @@
 package zerobase.weather.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class CreateDiary {
     @Getter
@@ -14,8 +13,10 @@ public class CreateDiary {
     @AllArgsConstructor
     public static class Request {
         @NotNull
+        @ApiModelProperty(example = "2023-09-01")
         private LocalDate date;
         @NotNull
+        @ApiModelProperty(example = "오늘 정말 행복했다.")
         private String text;
     }
 

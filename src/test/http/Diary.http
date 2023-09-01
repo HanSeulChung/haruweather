@@ -11,8 +11,8 @@ POST http://localhost:8080/create/diary
 Content-Type: application/json
 
 {
-  "date" : "2023-08-31",
-  "text" : "나는 점심을 먹었다."
+  "date" : "2023-09-01",
+  "text" : "오늘은 9월 첫날이다."
 }
 
 ### PUT diary
@@ -20,7 +20,7 @@ PUT http://localhost:8080/update/diary
 Content-Type: application/json
 
 {
-  "id" : 14,
+  "id" : 18,
   "date" : "2023-08-30",
   "text" : "일기를 수정한다."
 }
