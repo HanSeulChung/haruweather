@@ -18,7 +18,7 @@ public class UpdateDiary {
         @ApiModelProperty(example = "2023-09-01")
         private LocalDate date;
         @NotNull
-        @ApiModelProperty(example = "나는 오늘 운동을 했다.")
+        @ApiModelProperty(example = "나는 일기를 수정을 한다.")
         private String text;
     }
 
@@ -29,8 +29,11 @@ public class UpdateDiary {
     @AllArgsConstructor
     @Builder
     public static class Response {
+        @ApiModelProperty(example = "21")
         private int id;
+        @ApiModelProperty(example = "나는 일기를 수정을 한다.")
         private String text;
+        @ApiModelProperty(example = "2023-09-01")
         private LocalDate date;
 
 

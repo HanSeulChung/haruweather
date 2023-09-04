@@ -1,5 +1,5 @@
 ### Get diary
-GET http://localhost:8080/read/diary?date=2023-08-31
+GET http://localhost:8080/read/diary?date=2023-08-22
 Content-Type: application/json
 
 ### Get diaries
@@ -11,8 +11,8 @@ POST http://localhost:8080/create/diary
 Content-Type: application/json
 
 {
-  "date" : "2023-09-01",
-  "text" : "오늘은 9월 첫날이다."
+  "date" : "2023-09-04",
+  "text" : "오늘은 9월 첫째주 월요일이다."
 }
 
 ### PUT diary
@@ -21,7 +21,7 @@ Content-Type: application/json
 
 {
   "id" : 18,
-  "date" : "2023-08-30",
+  "date" : "2023-09-01",
   "text" : "일기를 수정한다."
 }
 
@@ -38,8 +38,8 @@ DELETE http://localhost:8080/delete/diary
 Content-Type: application/json
 
 {
-  "id" : 14,
-  "date" : "2023-08-30"
+  "id" : 19,
+  "date" : "2023-09-04"
 }
 
 ### Delete diaries

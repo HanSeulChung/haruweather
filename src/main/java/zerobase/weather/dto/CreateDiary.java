@@ -27,8 +27,11 @@ public class CreateDiary {
     @AllArgsConstructor
     @Builder
     public static class Response {
+        @ApiModelProperty(example = "13")
         private int id;
+        @ApiModelProperty(example = "오늘 정말 행복했다.")
         private String text;
+        @ApiModelProperty(example = "2023-09-01")
         private LocalDate date;
 
         public static Response from(DiaryDto diaryDto) {

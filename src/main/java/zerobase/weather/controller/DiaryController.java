@@ -51,7 +51,7 @@ public class DiaryController {
     public DeleteDiary.Response deleteDiary(@ApiParam(value = "일기를 삭제할 날짜", example = "2023-08-23")
                                                 @RequestBody @Valid DeleteDiary.Request request) {
         diaryService.deleteDiary(request.getId(), request.getDate());
-        return DeleteDiary.Response.builder().deleteMessage("삭제되었습니다.").build();
+        return DeleteDiary.Response.builder().deleteMessage(String.format("해당 날짜(%s)의 해당 id(%d)의 다이어리가 삭제되었습니다.", request.getDate(), request.getId())).build();
     }
 
     @ApiOperation(value = "선택한 날짜의 일기를 전체 삭제할 수 있습니다.")
@@ -65,7 +65,7 @@ public class DiaryController {
                                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         DeleteDiaries.Request request = new DeleteDiaries.Request(date);
         diaryService.deleteDiaries(date);
-        return DeleteDiaries.Response.builder().deleteMessage("삭제되었습니다.").build();
+        return DeleteDiaries.Response.builder().deleteMessage(String.format("해당 날짜(%s)의 다이어리들이 모두 삭제되었습니다.", date)).build();
     }
     @ApiOperation(value = "선택한 날짜의 모든 일기 데이터를 가져옵니다.")
     @ApiResponses(value = {
@@ -85,7 +85,7 @@ public class DiaryController {
     })
     @GetMapping("/read/diaries")
     List<Diary> readDiaries(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "조회할 기간의 첫번째 날", example = "2023-06-01") LocalDate startDate
-            ,@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "조회할 기간의 마지막 날") LocalDate endDate) {
+            ,@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ApiParam(value = "조회할 기간의 마지막 날", example = "2023-09-01") LocalDate endDate) {
         return diaryService.readDiaries(startDate, endDate);
     }
 

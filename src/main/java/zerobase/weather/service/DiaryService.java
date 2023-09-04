@@ -19,7 +19,6 @@ import zerobase.weather.dto.DiaryDto;
 import zerobase.weather.exception.DiaryException;
 import zerobase.weather.repository.DateWeatherRepository;
 import zerobase.weather.repository.DiaryRepository;
-import zerobase.weather.type.ErrorCode;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -80,6 +79,9 @@ public class DiaryService {
         if (date.isBefore(LocalDate.ofYearDay(1800, 1))) {
             throw new DiaryException(TOO_PAST_DATE);
         }
+        if (diaryRepository.findFirstByDate(date) == null) {
+            throw new DiaryException(DIARY_NOT_FOUND);
+        }
     }
 
     public boolean isValidDateFormat(LocalDate date) {
@@ -110,12 +112,10 @@ public class DiaryService {
 
     private DateWeather getDateWeather(LocalDate date) {
         List<DateWeather> dateWeatherListFromDB = dateWeatherRepository.findAllByDate(date);
-        if (dateWeatherListFromDB.size() == 0) {
-            // 새로 api에서 날씨 정보를 가져와야한다.
-            // 정책에 따라 유도리있게 진행해야함. 현재 날씨를 가져오거나 날씨없이 일기를 쓰도록
+        if (dateWeatherListFromDB.size() == 0) { // DB에 저장되지 않았을 경우 open api에서 날씨 정보를 가져옴
             return getWeatherFromApi();
         } else {
-            return dateWeatherListFromDB.get(0);
+            return dateWeatherListFromDB.get(0); // DB에 저장되어있을 경우 DB에서 정보를 가져옴
         }
     }
 
@@ -123,8 +123,9 @@ public class DiaryService {
     public List<Diary> readDiary(LocalDate date) {
         validateDiary(date);
         logger.debug("read diary");
-        return (List<Diary>) diaryRepository.findDiaryByDate(date)
-                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
+        return diaryRepository.findAllByDate(date);
+//        return (List<Diary>) diaryRepository.findAllByDate(date)
+//                .orElseThrow(() -> new DiaryException(DIARY_NOT_FOUND));
     }
     @Transactional(readOnly = true)
     public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
