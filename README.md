@@ -9,12 +9,28 @@ DateWeather : Open Api로 매일 새벽 1시마다 그 날의 날씨정보(Tempe
 ## 제공하는 기능(API)
 
 ### 다이어리(Diary) 관련 기능
-
+- **date의 형식은 모두 yyyy-MM-dd를 따릅니다.**
+- **모든 경우에서(생성, 조회, 삭제, 수정) 너무 오래전 date나 너무 먼 미래의 date는 사용할 수 없습니다**
 <ol>
 <li>다이어리 생성</li>
+  parameter > date, text
+  
 <li>다이어리 조회</li>
+<ul>
+  <li>단일 날짜에 대한 다이어리 조회 기능</li>
+  parameter > date
+  <li>여러 날짜에 대한 다이어리 조회 기능</li>
+  parameter > startDate, endDate
+</ul>
 <li>다이어리 수정</li>
+  parameter > date, text
 <li>다이어리 삭제</li>
+  <ul>
+  <li>해당 날짜에 대한 특정 id에 대한 다이어리 삭제 기능</li>
+  parameter > date, id
+  <li>해당 날짜에 쓰여져 있는 모든 다이어리 삭제 기능</li>
+  parameter > date
+</ul>
 </ol>
 
 실행 후 http://localhost:8080/swagger-ui/index.html# url을 이용하면 API에 따른 더 많은 정보를 확인할 수 있습니다.
